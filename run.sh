@@ -3,5 +3,5 @@
 cd "$(dirname "$0")"
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 set -a; . ./.env; set +a
-if [ -z "${GMAIL_APP_PASSWORD:-}" ]; then echo "GMAIL_APP_PASSWORD is empty in .env" >&2; exit 1; fi
+[ -z "${GMAIL_APP_PASSWORD:-}" ] && echo "note: GMAIL_APP_PASSWORD is empty; drafts work, sending is off" >&2
 exec ./bin/applymail

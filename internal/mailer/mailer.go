@@ -88,6 +88,9 @@ func (s SMTP) Send(from, to string, raw []byte) error {
 		host = host[:i]
 	}
 	var auth smtp.Auth
+	if !s.NoAuth && s.Password == "" {
+		return fmt.Errorf("Gmail app password is not set (GMAIL_APP_PASSWORD in .env), so nothing was sent")
+	}
 	if !s.NoAuth {
 		auth = smtp.PlainAuth("", s.User, s.Password, host)
 	}

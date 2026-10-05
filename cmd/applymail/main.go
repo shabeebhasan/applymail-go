@@ -64,7 +64,8 @@ func main() {
 		CVDir: must("CV_DIR"),
 		Applicant: letter.Applicant{Name: must("APPLICANT_NAME"), Email: gmail,
 			Website: os.Getenv("APPLICANT_WEBSITE"), Phone: os.Getenv("APPLICANT_PHONE"), Facts: facts},
-		Sender: mailer.SMTP{Addr: env("SMTP_ADDR", "smtp.gmail.com:587"), User: gmail, Password: must("GMAIL_APP_PASSWORD")},
+		// drafts work without the password; only sending needs it
+		Sender: mailer.SMTP{Addr: env("SMTP_ADDR", "smtp.gmail.com:587"), User: gmail, Password: os.Getenv("GMAIL_APP_PASSWORD")},
 		Token:  must("API_TOKEN"),
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
