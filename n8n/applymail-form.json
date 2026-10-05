@@ -1,0 +1,72 @@
+{
+  "name": "applymail: job post to draft application",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "New job application",
+        "formDescription": "Paste a LinkedIn job post. applymail picks the CV and writes the cover letter. Nothing is emailed until you approve it.",
+        "formFields": {
+          "values": [
+            { "fieldLabel": "Job post", "fieldType": "textarea", "requiredField": true }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "a1f0c2e4-0001-4c55-9c11-applymail0001",
+      "name": "Job post form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [0, 0],
+      "webhookId": "applymail-form"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.APPLYMAIL_URL || 'http://127.0.0.1:8095' }}/drafts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "X-Api-Token", "value": "={{ $env.APPLYMAIL_TOKEN }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $json['Job post'], source: 'n8n' }) }}",
+        "options": { "timeout": 300000 }
+      },
+      "id": "a1f0c2e4-0002-4c55-9c11-applymail0002",
+      "name": "Create draft (applymail)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "f1", "name": "draft_id", "type": "string", "value": "={{ $json.id }}" },
+            { "id": "f2", "name": "role", "type": "string", "value": "={{ $json.job.role }} at {{ $json.job.company }}" },
+            { "id": "f3", "name": "send_to", "type": "string", "value": "={{ $json.to || 'no email in the post' }}" },
+            { "id": "f4", "name": "subject", "type": "string", "value": "={{ $json.subject }}" },
+            { "id": "f5", "name": "cv", "type": "string", "value": "={{ $json.cv_path.split('/').pop() }} ({{ $json.cv_reason }})" },
+            { "id": "f6", "name": "warnings", "type": "string", "value": "={{ ($json.job.warnings || []).join('; ') }}" },
+            { "id": "f7", "name": "next_step", "type": "string", "value": "Review in Discord or POST /drafts/{{ $json.id }}/send with {\"confirm\": \"{{ $json.id }}\"}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1f0c2e4-0003-4c55-9c11-applymail0003",
+      "name": "Summary for review",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Job post form": { "main": [[{ "node": "Create draft (applymail)", "type": "main", "index": 0 }]] },
+    "Create draft (applymail)": { "main": [[{ "node": "Summary for review", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "pinData": {}
+}
