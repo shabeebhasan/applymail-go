@@ -41,6 +41,8 @@ var synonyms = map[string][]string{
 	"fullstack":   {"full stack", "full-stack", "fullstack", "react", "next.js", "nextjs", "typescript", "frontend"},
 	"prod":        {"production", "senior", "scale", "lead"},
 	"coaching":    {"coaching", "coach", "education", "edtech", "learning"},
+	"data":        {"data engineer", "data engineering", "etl", "elt", "pipeline", "pipelines", "spark", "pyspark", "databricks", "airflow", "dbt", "warehouse", "snowflake", "redshift", "bigquery", "sql", "kafka", "analytics engineer"},
+	"aws":         {"aws", "lambda", "s3", "redshift", "emr", "glue", "athena", "cloud"},
 	"cv":          {"computer vision", "vision", "image", "opencv", "yolo"},
 }
 
